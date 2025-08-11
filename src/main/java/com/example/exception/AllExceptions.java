@@ -26,4 +26,10 @@ public class AllExceptions{
         return ex.getMessage();
     }
 
+    @ExceptionHandler(UsernameOrPasswordIsInvalidException.class)
+    @ResponseStatus(HttpStatus.UNAUTHORIZED)
+    public String handleUsernameOrPasswordInvalid(UsernameOrPasswordIsInvalidException ex){
+        return ex.getMessage();
+    }
+
 }

@@ -7,6 +7,7 @@ import com.example.entity.Account;
 import com.example.exception.PasswordTooShortException;
 import com.example.exception.UsernameAlreadyExistsException;
 import com.example.exception.UsernameIsBlankException;
+import com.example.exception.UsernameOrPasswordIsInvalidException;
 import com.example.repository.AccountRepository;
 
 @Service
@@ -19,6 +20,7 @@ public class AccountService {
         this.accountRepository = accountRepository;
     }
 
+    //user story #1: business logic (throws exceptions and gives specific HTTP codes)
     public Account registerAccount(Account account){
 
         if( account.getPassword().length() < 4 ){
@@ -36,6 +38,19 @@ public class AccountService {
         
         return accountRepository.save(account);
 
+    }
+    
+    //User story #2.
+    public Account loginAccount(Account account){
+        if( !accountRepository.findByUsernameAndPassword(account.getUsername(), account.getPassword()).isPresent() ){
+
+            throw new UsernameOrPasswordIsInvalidException("Username or Password entered is invalid. Try again.");
+
+        }
+
+        Account loggedAccount = accountRepository.findByUsernameAndPassword(account.getUsername(), account.getPassword()).get();        
+        
+        return loggedAccount;
     }
 
 }
