@@ -1,16 +1,24 @@
 package com.example.controller;
 
+import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.example.entity.Account;
 import com.example.entity.Message;
-import com.example.service.AccountService;;
+import com.example.service.AccountService;
+import com.example.service.MessageService;;
 
 /**
  * TODO: You will need to write your own endpoints and handlers for your controller using Spring. The endpoints you will need can be
@@ -23,12 +31,13 @@ public class SocialMediaController {
 
 
     private final AccountService accountService;
+    private final MessageService messageService;
 
     @Autowired
-    public SocialMediaController(AccountService accountService){
+    public SocialMediaController(AccountService accountService, MessageService messageService){
         this.accountService = accountService;
+        this.messageService = messageService;
     }
-
 /*
  * ## 1: Our API should be able to process new User registrations.
  * As a user, I should be able to create a new Account on the endpoint POST localhost:8080/register.
@@ -46,7 +55,7 @@ public class SocialMediaController {
     public ResponseEntity<Account> registerAccount(@RequestBody Account account){
 
         //confused on how Spring Boot calls a service...
-        Account registeredAccount = accountService.registerAccount(account);    //to-do: write this method
+        Account registeredAccount = accountService.registerAccount(account);    
 
         ResponseEntity<Account> rA = new ResponseEntity<Account>(registeredAccount, HttpStatus.OK);
 
@@ -68,7 +77,7 @@ public class SocialMediaController {
     @PostMapping("/login")
     public ResponseEntity<Account> loginAccount(@RequestBody Account account){
 
-        Account loggedAccount = accountService.loginAccount(account);    //to-do: write this method
+        Account loggedAccount = accountService.loginAccount(account);    
 
         ResponseEntity<Account> lA = new ResponseEntity<Account>(loggedAccount, HttpStatus.OK);
 
@@ -92,6 +101,16 @@ public class SocialMediaController {
  * - If the creation of the message is not successful, the response status should be 400. (Client error)
  */
 
+    @PostMapping("/messages")
+    public ResponseEntity<Message> createMessage(@RequestBody Message message){
+
+        Message createdMessage = messageService.createMessage(message);    
+
+        ResponseEntity<Message> cM = new ResponseEntity<Message>(createdMessage, HttpStatus.OK);
+
+        return cM;
+
+    }
 
 
 /*
@@ -103,6 +122,16 @@ public class SocialMediaController {
  * The response status should always be 200, which is the default.
  */
 
+    @GetMapping("/messages")
+    public ResponseEntity<List<Message>> getAllMessages(){
+
+        List<Message> messages = messageService.getAllMessages();    
+
+        ResponseEntity<List<Message>> mS = new ResponseEntity<List<Message>>(messages, HttpStatus.OK);
+
+        return mS;
+
+    }
 
 
  /*
@@ -113,6 +142,18 @@ public class SocialMediaController {
  * It is expected for the response body to simply be empty if there is no such message. 
  * The response status should always be 200, which is the default.
  */
+
+    @GetMapping("/messages/{messageId}")
+    public ResponseEntity<Message> getMessageById(@PathVariable int messageId){
+
+        Message message = messageService.getMessageById(messageId);    
+
+        ResponseEntity<Message> m = new ResponseEntity<Message>(message, HttpStatus.OK);
+
+        return m;
+
+    }
+
 
  /*
  * ## 6: Our API should be able to delete a message identified by a message ID.
@@ -126,6 +167,17 @@ public class SocialMediaController {
  * This is because the DELETE verb is intended to be idempotent: 
  * ie, multiple calls to the DELETE endpoint should respond with the same type of response.
  */
+
+    @DeleteMapping("/messages/{messageId}")
+    public ResponseEntity<Integer> deleteMessageById(@PathVariable int messageId){
+
+        Integer rowsAffected = messageService.deleteMessageById(messageId);    
+
+        ResponseEntity<Integer> rA = new ResponseEntity<Integer>(rowsAffected, HttpStatus.OK);
+
+        return rA;
+
+    }
 
  /*
  * ## 7: Our API should be able to update a message text identified by a message ID.
@@ -143,6 +195,18 @@ public class SocialMediaController {
  * - If the update of the message is not successful for any reason, the response status should be 400. (Client error)
  */
 
+    @PatchMapping("/messages/{messageId}")
+    public ResponseEntity<Integer> patchMessageById(@RequestBody Message message, @PathVariable int messageId){
+
+        Integer rowsUpdated = messageService.patchMessageById(message.getMessageText(), messageId);    
+
+        ResponseEntity<Integer> rU = new ResponseEntity<Integer>(rowsUpdated, HttpStatus.OK);
+
+        return rU;
+
+    }
+
+
  /*
   * ## 8: Our API should be able to retrieve all messages written by a particular user.
   * As a user, I should be able to submit a GET request on the endpoint GET localhost:8080/accounts/{accountId}/messages.
@@ -151,6 +215,18 @@ public class SocialMediaController {
   * which is retrieved from the database. It is expected for the list to simply be empty if there are no messages. 
   * The response status should always be 200, which is the default.
   */
+
+    @GetMapping("/accounts/{accountId}/messages")
+    public ResponseEntity<List<Message>> getMessagesByAccountId(@PathVariable int accountId){
+
+        List<Message> messages = messageService.getAllMessagesByAccountId(accountId); 
+
+        ResponseEntity<List<Message>> mS = new ResponseEntity<List<Message>>(messages, HttpStatus.OK);
+
+        return mS;
+
+    }
+
 
 
 }
