@@ -14,10 +14,7 @@ public interface MessageRepository extends JpaRepository<Message, Integer>{
     //for user story #3
     public Optional<Message> findByPostedBy(int postedBy);
 
-    //for user story #7
-    public void updateMessageTextById(String messageText, int messageId);
-
     //for user story #8
-    public List<Message> findAllByAccountId(int accountId);
+    public List<Message> findAllByPostedBy(int postedBy);
 
 }

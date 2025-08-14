@@ -5,7 +5,6 @@ import com.example.exception.MessageDoesNotExistException;
 import com.example.exception.MessageIsBlankException;
 import com.example.exception.MessageIsTooLongException;
 import com.example.exception.UserNotFoundException;
-import com.example.repository.AccountRepository;
 import com.example.repository.MessageRepository;
 
 import java.util.List;
@@ -31,7 +30,6 @@ public class MessageService {
         if( message.getMessageText().isBlank() || message.getMessageText().isEmpty() ){
             throw new MessageIsBlankException("Message cannot be blank!");
         }
-
 
         if( message.getMessageText().length() > 255 ){
             throw new MessageIsTooLongException("Message cannot be greater than 255 characters!");
@@ -92,7 +90,11 @@ public class MessageService {
             throw new MessageIsTooLongException("Message cannot be greater than 255 characters!");
         }
 
-        messageRepository.updateMessageTextById(messageText, messageId);
+        Message updateMessage = messageRepository.findById(messageId).get();
+
+        updateMessage.setMessageText(messageText);
+
+        messageRepository.save(updateMessage);
 
         return 1;
 
@@ -101,9 +103,9 @@ public class MessageService {
     //user story #8
     public List<Message> getAllMessagesByAccountId(int accountId){
 
-        List<Message> messages = messageRepository.findAllByAccountId(accountId);
+        List<Message> messagesByAccount = messageRepository.findAllByPostedBy(accountId);
 
-        return messages;
+        return messagesByAccount;
 
     }
 
